@@ -14,7 +14,7 @@ NAME = test
 
 FLAGS = -Wall -Wextra -Werror -std=c++98
 
-CP = c++
+CP = clang++
 
 SRC = main.cpp
 
