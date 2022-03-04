@@ -3,19 +3,19 @@
 #define BIDERECTIONAL_ITERATOR
 
 template<class IT>
-class biderectional_iterator {
+class bidirectional_iterator {
   typedef typename IT::value_type rvalue;
   typedef typename IT::pointer pointer;
   typedef typename IT::reference reference;
-  typedef biderectional_iterator iterator;
+  typedef bidirectional_iterator iterator;
   typedef IT iterator_type;
 public:
   iterator_type iterator_value;
 public:
-  biderectional_iterator(){}
-  biderectional_iterator(const iterator_type &c): iterator_value(c)
+  bidirectional_iterator(){}
+  bidirectional_iterator(const iterator_type &c): iterator_value(c)
   {}
-  biderectional_iterator(const iterator &c): iterator_value(c.iterator_value)
+  bidirectional_iterator(const iterator &c): iterator_value(c.iterator_value)
   {}
   const iterator &operator=(const iterator &c)
   {
@@ -75,7 +75,7 @@ public:
     return (tmp);
   }
 
-  ~biderectional_iterator()
+  ~bidirectional_iterator()
   {}
 };
 
