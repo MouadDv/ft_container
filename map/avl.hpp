@@ -1,35 +1,39 @@
 #pragma once
 #ifndef TREE_CLASS
 #define TREE_CLASS
-#define COUNT 10
 
 #include "pair.hpp"
-#include "cleanup.hpp"
+#include "map.hpp"
 #include <iostream>
 #include <algorithm>
 #include <cstdlib>
+
 namespace ft
 {
-
     template <class T1, class T2>
     struct tree {
-        typename ft::map<const T1, T2>::value_type val;
-        tree<T1, T2> *parent;
-        tree<T1, T2> *r;
-        tree<T1, T2> *l;
-        int h;
+        typedef typename ft::map<T1, T2>::value_type value_t;
+        typedef tree<T1, T2> tree_s;
 
-        tree(const pair<const T1, T2> &p): h(1) ,parent(0), val(p), r(0), l(0) {}
+        tree_s *parent;
+        tree_s *r;
+        tree_s *l;
+        int h;
+        value_t val;
+
+        tree(const pair<T1, T2> &p):parent(0), val(p), r(0), l(0) {}
     };
 
     template <typename F, typename S>
     class Avl {
+        typedef typename ft::map<F, S>::value_type value_t;
+        typedef tree<F, S> tree_s;
     public:
-        tree<F, S> *root;
+        tree_s *root;
     public:
         Avl(): root(0) {
         }
-        int calheight(tree<F, S> *p)
+        int calheight(tree_s *p)
         {
             if(p->l && p->r)
             {
@@ -46,10 +50,10 @@ namespace ft
             {
                return p->r->h + 1;
             }
-            return 0;
+            return 1;
         }
 
-        int bf(tree<F, S> *n)
+        int bf(tree_s *n)
         {
             if(n->l && n->r)
             {
@@ -63,143 +67,111 @@ namespace ft
             {
                 return -(n->r->h);
             }
-            return (0);
+            return (1337);
         }
 
-        void Lr(tree<F, S> **s)
+        void Lr(tree_s **s)
         {
-            tree<F, S> *d = *s;
-            tree<F, S> *tmp;
-            *s = d->l;
-            tmp = d->l->r;
-            d->l->r = d;
-            d->l = tmp;
+            tree_s *p;
+            tree_s *tp;
+            p = *s;
+            tp = p->l;
+
+            p->l = tp->r;
+            tp->r = p;
+
+            *s = tp;
+            tp->l->h = calheight(tp->l);
+            tp->r->h = calheight(tp->r);
+            tp->h = calheight(tp);
         }
 
-        void Rr(tree<F, S> **s)
+        void Rr(tree_s **s)
         {
-            tree<F, S> *d = *s;
-            tree<F, S> *tmp;
-            *s = d->r;
-            tmp = d->r->l;
-            d->r->l = d;
-            d->r = tmp;
+            tree_s *p;
+            tree_s *tp;
+            p = *s;
+            tp = p->r;
+
+            p->r = tp->l;
+            tp->l = p;
+
+            *s = tp;
+            tp->r->h = calheight(tp->r);
+            tp->l->h = calheight(tp->l);
+            tp->h = calheight(tp);
         }
 
-        void LRr(tree<F, S> **s)
-        {
-            //subchild rotation
-            tree<F, S> *d = *s;
-            tree<F, S> *tmp;
-            tree<F, S> *tmpl;
-            tmpl = d->l->r->l;
-            tmp = d->l;
-            d->l = d->l->r;
-            d->l->l = tmp;
-            d->l->l->r = tmpl;
-
-
-            //parent rotation
-            *s = d->l;
-            tmp = d->l->r;
-            d->l->r = d;
-            d->l = tmp;
-        }
-
-        void RLr(tree<F, S> **s)
+        void RLr(tree_s **s)
         {
             //subchild rotation
-            tree<F, S> *d = *s;
-            tree<F, S> *tmp;
-            tree<F, S> *tmpr;
-            tmpr = d->r->l->r;
-            tmp = d->r;
-            d->r = d->r->l;
-            d->r->r = tmp;
-            d->r->r->l = tmpr;
+            tree_s *p;
+            tree_s *tp;
+            tree_s *tp2;
+            p = *s;
+            tp = p->r;
+            tp2 = p->r->l;
 
-            //parent rotation
-            *s = d->r;
-            tmp = d->r->l;
-            d->r->l = d;
-            d->r = tmp;
+            p->r = tp2->l;
+            tp->l = tp2->r;
+            tp2->l = p;
+            tp2->r = tp;
+
+            *s = tp2;
+            tp2->r->h = calheight(tp2->r);
+            tp2->l->h = calheight(tp2->l);
+            tp2->h = calheight(tp2);
         }
 
-        int treeheight(tree<F, S> *r)
+        void LRr(tree_s **s)
         {
-            if (r == nullptr)
-                return 0;
-            else {
-                int lh = treeheight(r->l);
-                int rh = treeheight(r->r);
-                return (std::max(lh, rh)) + 1;
-            }
+            //subchild rotation
+            tree_s *p;
+            tree_s *tp;
+            tree_s *tp2;
+
+            p = *s;
+            tp = p->l;
+            tp2 = p->l->r;
+
+            p->l = tp2->r;
+            tp->r = tp2->l;
+            tp2->r = p;
+            tp2->l = tp;
+
+            *s= tp2;
+            tp2->l->h = calheight(tp2->l);
+            tp2->r->h = calheight(tp2->r);
+            tp2->h = calheight(tp2);
         }
-        void insert(tree<F, S> **pos,pair<const F, S> &p, tree<F, S> *par)
+
+        void insert(tree_s **pos, const value_t &p)
         {
             if ((*pos) == nullptr)
-                {
-                    (*pos) = new tree<F, S>(p);
-                    (*pos)->parent = par;
-                    //if(this->root == nullptr)
-                    //    this->root = pos;
-                    //std::cout << "Element: " << pos->val.first << "\n";
-                }
+            {
+                (*pos) = new tree<F, S>(p);
+                (*pos)->h = 1;
+                return ;
+            }
             else
-                {
-                    if (p < (*pos)->val)
-                        insert(&((*pos)->l), p, (*pos));
-                    else
-                        insert(&((*pos)->r), p, (*pos));
-                }
+            {
+                if (p < (*pos)->val)
+                    insert(&((*pos)->l), p);
+                else
+                    insert(&((*pos)->r), p);
+            }
             (*pos)->h = calheight(*pos);
-            if(bf(*pos)==2 && bf((*pos)->l)==1)
-                 Lr(pos);
-            else if(bf(*pos)==-2 && bf((*pos)->r)==-1)
+            if(bf(*pos) == 2 && bf((*pos)->l) == 1)
+                Lr(pos);
+            else if(bf(*pos) == -2 && bf((*pos)->r) == -1)
                 Rr(pos);
-            else if(bf(*pos)==-2 && bf((*pos)->r)==1)
+            else if(bf(*pos) == -2 && bf((*pos)->r) == 1)
                 RLr(pos);
-            else if(bf(*pos)==2 && bf((*pos)->l)==-1)
+            else if(bf(*pos) == 2 && bf((*pos)->l) == -1)
                 LRr(pos);
         }
         ~Avl(){}
     };
-
-
-    using namespace std;
-
-    template <class F, class S>
-    void print2DUtil(ft::tree<F, S> *root, int space)
-    {
-        // Base case
-        if (root == NULL)
-            return;
-
-        // Increase distance between levels
-        space += COUNT;
-
-        // Process right child first
-        print2DUtil(root->r, space);
-
-        // Print current node after space
-        // count
-        cout<<endl;
-        for (int i = COUNT; i < space; i++)
-            cout<<" ";
-        cout<<root->val.first<<"\n";
-        //cout<< root->parent << "\n";
-        // Process left child
-        print2DUtil(root->l, space);
-    }
-
-    // Wrapper over print2DUtil()
-    template<typename F, typename S>
-
-    void print2D(ft::tree<F, S> *root)
-    {
-        // Pass initial space count as 0
-        print2DUtil(root, 0);
-    }
 
 }
 #endif

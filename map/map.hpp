@@ -14,6 +14,8 @@ namespace ft
   class map {
   public:
     typedef ft::pair<const Key, T> value_type;
+    typedef map* pointer;
+    typedef map& reference;
   public:
 
     map();
