@@ -43,30 +43,20 @@ namespace ft
                     return  p->l->h + 1;
             }
             else if(p->l && p->r == NULL)
-            {
                return p->l->h + 1;
-            }
             else if(p->l ==NULL && p->r)
-            {
                return p->r->h + 1;
-            }
             return 1;
         }
 
         int bf(tree_s *n)
         {
             if(n->l && n->r)
-            {
                 return n->l->h - n->r->h;
-            }
             else if(n->l && n->r == NULL)
-            {
                 return n->l->h;
-            }
             else if(n->l == NULL && n->r )
-            {
                 return -(n->r->h);
-            }
             return (1337);
         }
 
@@ -104,7 +94,6 @@ namespace ft
 
         void RLr(tree_s **s)
         {
-            //subchild rotation
             tree_s *p;
             tree_s *tp;
             tree_s *tp2;
@@ -125,7 +114,6 @@ namespace ft
 
         void LRr(tree_s **s)
         {
-            //subchild rotation
             tree_s *p;
             tree_s *tp;
             tree_s *tp2;
@@ -170,6 +158,18 @@ namespace ft
             else if(bf(*pos) == 2 && bf((*pos)->l) == -1)
                 LRr(pos);
         }
+
+		tree *get_next_element(tree *s, value_t val)
+		{
+			if (s == nullptr)
+				return nullptr;
+			if (s->val == val)
+				return (s);
+			tree *leftret = get_next_element(s.left);
+			if (leftret != nullptr && leftret->val == val)
+				return (s);
+			tree *rightret =get_next_element(s.right);
+		}
         ~Avl(){}
     };
 
