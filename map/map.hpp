@@ -5,7 +5,7 @@
 #include <iostream>
 #include "pair.hpp"
 #include "avl.hpp"
-#include "bidirectional_iterator.hpp"
+//#include "bidirectional_iterator.hpp"
 
 namespace ft
 {
@@ -21,9 +21,9 @@ namespace ft
     typedef Compare                                key_compare;
     typedef Alloc                                  allocator_type;
     typedef ft::pair<const Key, T>                 value_type;
-    typedef map*                                   pointer;
-    typedef map&                                   reference;
-    typedef std::bidirectional_iterator_tag        iterator_category;
+    typedef typename allocator_type::pointer       pointer;
+    typedef typename allocator_type::reference     reference;
+    //typedef std::bidirectional_iterator_tag        iterator_category;
 
   private:
     Avl<key_type, mapped_type> tree;

@@ -3,36 +3,64 @@
 #define TREE_CLASS
 
 #include "pair.hpp"
-#include "map.hpp"
 #include <iostream>
 #include <algorithm>
 #include <cstdlib>
 
 namespace ft
 {
-    template <class T1, class T2>
+    template <class T1>
     struct tree {
-        typedef typename ft::map<T1, T2>::value_type value_t;
-        typedef tree<T1, T2> tree_s;
+        typedef T1 value_t;
+        typedef tree<T1> tree_s;
 
         tree_s *parent;
         tree_s *r;
         tree_s *l;
-        int h;
+        int     h;
         value_t val;
 
-        tree(const pair<T1, T2> &p):parent(0), val(p), r(0), l(0) {}
+        tree(const value_t &p):parent(0), val(p), r(0), l(0) {}
+        tree(const tree &p): parent(p.parent), r(p.r), l(p.l), h(p.h), val(p.val) {}
     };
 
-    template <typename F, typename S>
+    template <typename F, typename S, typename key_comp, typename Alloc>
     class Avl {
-        typedef typename ft::map<F, S>::value_type value_t;
-        typedef tree<F, S> tree_s;
+        typedef ft::pair<const F, S> value_t;
+        typedef tree<value_t> tree_s;
+        typedef typename Alloc::template rebind<tree<value_t> >::other  alloc_type;
     public:
+        alloc_type alloc;
+        key_comp comp;
         tree_s *root;
+        tree_s *el;
+        size_t nbrofnodes;
     public:
-        Avl(): root(0) {
+        Avl(): root(0), el(0), nbrofnodes(0) {
         }
+        S &get_element_by_index(F &k)
+        {
+            tree_s *tmp = this->root;
+
+            while (tmp)
+            {
+                if (k > tmp->val.first)
+                    tmp = tmp->right;
+                else if (k < tmp->val.first)
+                    tmp = tmp->left;
+                else
+                    break;
+            }
+            if (k == tmp->val.first)
+                return (tmp->val.second);
+            else
+            {
+                value_t p = ft::make_pair(k, value_t());
+                insert(&(this->root), p, nullptr);
+                return (p.second);
+            }
+        }
+
         int calheight(tree_s *p)
         {
             if(p->l && p->r)
@@ -51,53 +79,69 @@ namespace ft
 
         int bf(tree_s *n)
         {
-            if(n->l && n->r)
-                return n->l->h - n->r->h;
-            else if(n->l && n->r == NULL)
-                return n->l->h;
-            else if(n->l == NULL && n->r )
-                return -(n->r->h);
-            return (1337);
+            if (n)
+            {
+                if(n->l && n->r)
+                    return n->l->h - n->r->h;
+                else if(n->l && n->r == nullptr)
+                    return n->l->h;
+                else if(n->l == nullptr && n->r )
+                    return -(n->r->h);
+            }
+            return (0);
         }
 
-        void Lr(tree_s **s)
+        void parent_set(tree_s *&n, tree_s *p)
+        {
+            if (n == nullptr)
+                return ;
+            parent_set(n->r, n);
+            n->parent = p;
+            parent_set(n->l, n);
+        }
+
+        tree_s *Lr(tree_s *&s)
         {
             tree_s *p;
             tree_s *tp;
-            p = *s;
+            p = s;
             tp = p->l;
 
             p->l = tp->r;
             tp->r = p;
 
-            *s = tp;
+            parent_set(tp, s->parent);
+
             tp->l->h = calheight(tp->l);
             tp->r->h = calheight(tp->r);
             tp->h = calheight(tp);
+            return tp;
         }
 
-        void Rr(tree_s **s)
+        tree_s *Rr(tree_s *&s)
         {
             tree_s *p;
             tree_s *tp;
-            p = *s;
+            p = s;
             tp = p->r;
 
             p->r = tp->l;
             tp->l = p;
 
-            *s = tp;
+            parent_set(tp, s->parent);
+
             tp->r->h = calheight(tp->r);
             tp->l->h = calheight(tp->l);
             tp->h = calheight(tp);
+            return tp;
         }
 
-        void RLr(tree_s **s)
+        tree_s *RLr(tree_s *&s)
         {
             tree_s *p;
             tree_s *tp;
             tree_s *tp2;
-            p = *s;
+            p = s;
             tp = p->r;
             tp2 = p->r->l;
 
@@ -106,19 +150,21 @@ namespace ft
             tp2->l = p;
             tp2->r = tp;
 
-            *s = tp2;
+            parent_set(tp2, s->parent);
+
             tp2->r->h = calheight(tp2->r);
             tp2->l->h = calheight(tp2->l);
             tp2->h = calheight(tp2);
+            return tp2;
         }
 
-        void LRr(tree_s **s)
+        tree_s *LRr(tree_s *&s)
         {
             tree_s *p;
             tree_s *tp;
             tree_s *tp2;
 
-            p = *s;
+            p = s;
             tp = p->l;
             tp2 = p->l->r;
 
@@ -127,49 +173,142 @@ namespace ft
             tp2->r = p;
             tp2->l = tp;
 
-            *s= tp2;
+            parent_set(tp2, s->parent);
+
             tp2->l->h = calheight(tp2->l);
             tp2->r->h = calheight(tp2->r);
             tp2->h = calheight(tp2);
+            return tp2;
         }
 
-        void insert(tree_s **pos, const value_t &p)
+        void insert(tree_s **pos, const value_t &p, tree_s *pa)
         {
             if ((*pos) == nullptr)
             {
-                (*pos) = new tree<F, S>(p);
+                (*pos) = alloc.allocate(1);
+                alloc.construct(*pos, p);
                 (*pos)->h = 1;
+                (*pos)->parent = pa;
+                this->nbrofnodes++;
                 return ;
             }
             else
             {
-                if (p < (*pos)->val)
-                    insert(&((*pos)->l), p);
-                else
-                    insert(&((*pos)->r), p);
+                if (p.first == (*pos)->val.first)
+                    return ;
+                else if (!comp((*pos)->val.first, p.first))
+                    insert(&((*pos)->l), p, *pos);
+                else if (!comp(p.first, (*pos)->val.first))
+                    insert(&((*pos)->r), p, *pos);
             }
             (*pos)->h = calheight(*pos);
             if(bf(*pos) == 2 && bf((*pos)->l) == 1)
-                Lr(pos);
+                *pos = Lr(*pos);
             else if(bf(*pos) == -2 && bf((*pos)->r) == -1)
-                Rr(pos);
+                *pos = Rr(*pos);
             else if(bf(*pos) == -2 && bf((*pos)->r) == 1)
-                RLr(pos);
+                *pos = RLr(*pos);
             else if(bf(*pos) == 2 && bf((*pos)->l) == -1)
-                LRr(pos);
+                *pos = LRr(*pos);
+            this->el = this->root;
         }
 
-		tree *get_next_element(tree *s, value_t val)
+        tree_s *erase(tree_s *t, const F &d)
+        {
+            if(t == nullptr)
+                return nullptr;
+            if (comp(t->val.first, d))
+                t->r = erase(t->r, d);
+            else if (comp(d , t->val.first))
+                t->l = erase(t->l, d);
+            else if (d == t->val.first)
+            {
+                if (t->l != nullptr)
+                {
+                    tree_s *d = t;
+                    tree_s *tmp;
+                    tmp = mostright(t->l);
+                    t = alloc.allocate(1);
+                    alloc.construct(t, *tmp);
+                    t->r = d->r;
+                    t->parent = d->parent;
+                    t->l = erase(d->l, tmp->val.first);
+                    alloc.destroy(d);
+                    alloc.deallocate(d, 1);
+                }
+                else if (t->r != nullptr)
+                {
+                    tree_s *d = t;
+                    tree_s *tmp;
+                    tmp = mostleft(t->r);
+                    t = alloc.allocate(1);
+                    alloc.construct(t, *tmp);
+                    t->l = d->l;
+                    t->parent = d->parent;
+                    t->r = erase(d->r, tmp->val.first);
+                    alloc.destroy(d);
+                    alloc.deallocate(d, 1);
+                }
+                else
+                {
+                    alloc.destroy(t);
+                    alloc.deallocate(t, 1);
+                    this->nbrofnodes--;
+                    return nullptr;
+                }
+            }
+
+            t->h = calheight(t);
+            if (t->l)
+                t->l->h = calheight(t->l);
+            if (t->r)
+                t->r->h = calheight(t->r);
+            if(bf(t) > 1 && bf(t->l) >= 0)
+                t = Lr(t);
+            else if(bf(t) < -1 && bf(t->r) <= 0)
+                t = Rr(t);
+            else if(bf(t) < -1 && bf(t->r) > 0)
+                t = RLr(t);
+            else if(bf(t) > 1 && bf(t->l) < 0)
+                t = LRr(t);
+
+            if (t->l)
+                t->l->parent = t;
+            if (t->r)
+                t->r->parent = t;
+            return t;
+        }
+
+        tree_s *mostleft(tree_s *s)
+        {
+            while (s->l != nullptr)
+                s = s->l;
+            return (s);
+        }
+
+        tree_s *mostright(tree_s *s)
+        {
+            while (s->r != nullptr)
+                s = s->r;
+            return (s);
+        }
+
+		bool get_next_element(tree_s *s, value_t val)
 		{
-			if (s == nullptr)
-				return nullptr;
-			if (s->val == val)
-				return (s);
-			tree *leftret = get_next_element(s.left);
-			if (leftret != nullptr && leftret->val == val)
-				return (s);
-			tree *rightret =get_next_element(s.right);
+            // TODO: fix this shit
+            s->val = val;
+            return (0);
 		}
+
+        void clear(tree_s *t)
+        {
+            if (t == nullptr)
+                return ;
+            clear(t->l);
+            clear(t->r);
+            delete t;
+            this->root = nullptr;
+        }
         ~Avl(){}
     };
 

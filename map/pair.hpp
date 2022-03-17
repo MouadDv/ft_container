@@ -10,7 +10,9 @@ namespace ft
     T1 first;
     T2 second;
   public:
-    pair(){}
+    pair(): first(), second()
+    {
+    }
     template<class U, class V>
     pair (const pair<U,V>& c): first(c.first), second(c.second)
     {
