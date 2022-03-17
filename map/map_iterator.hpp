@@ -43,7 +43,7 @@ private:
   }
 
 public:
-  map_iterator(): root(NULL), return_node(nullptr), end_node(nullptr)
+  map_iterator(): root(NULL), return_node(NULL), end_node(NULL)
   {
   }
   map_iterator(const pointer croot, const pointer creturn, const pointer cend): root(croot), return_node(creturn), end_node(cend)
@@ -85,7 +85,7 @@ public:
     pointer tmp;
 
     if (return_node->r != NULL)
-      return_node = this->mostleft(return_node->r);
+      return_node = mostleft(return_node->r);
     else
     {
       tmp = return_node->l;
@@ -120,7 +120,7 @@ public:
       return (*this);
     }
     else if (return_node->l != NULL)
-      return_node = most_right(return_node->r);\
+      return_node = mostright(return_node->r);\
     else
     {
       tmp = return_node->parent;
@@ -143,7 +143,21 @@ public:
   {
     return (&operator*());
   }
-  
+
+  pointer mostleft(pointer c)
+  {
+    while (c != NULL)
+      c = c->l;
+    return (c);
+  }
+
+  pointer mostright(pointer c)
+  {
+    while (c != NULL)
+      c = c->r;
+    return (c);
+  }
+
   ~map_iterator()
   {
   }

@@ -12,7 +12,7 @@ namespace ft
     T1 first;
     T2 second;
   public:
-    pair(): first(), second()
+    pair(): first(T1()), second(T2())
     {
     }
     template<class U, class V>

@@ -28,9 +28,9 @@ namespace ft
     typedef typename allocator_type::template rebind<base_type>::other       alloc_base;
     typedef size_t                                                           size_type;
     typedef typename ft::Avl<key_type, mapped_type, Compare, Alloc>::tree_s* avlpointer;
-    typedef ft::map_iterator<avlpointer , value_type>                 iterator;
+    typedef ft::map_iterator<avlpointer , value_type>                        iterator;
     //TODO const_iterator declaration
-    typedef ft::map_iterator<avlpointer , value_type>                 const_iterator;
+    typedef ft::map_iterator<avlpointer , value_type>                        const_iterator;
 
 
 
@@ -93,6 +93,11 @@ class value_compare
       base_tree->insert(&(base_tree->root), val, NULL);
       _size++;
       return(ft::make_pair(iterator(base_tree->root, base_tree->mostleft(base_tree->root), base_tree->el), 1));
+    }
+
+    iterator begin()
+    {
+      return (iterator(base_tree->root, base_tree->mostleft(base_tree->root), base_tree->el));
     }
 
     ~map()

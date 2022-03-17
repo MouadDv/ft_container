@@ -20,7 +20,8 @@ namespace ft
         int     h;
         value_t val;
 
-        tree(const value_t &p):parent(NULL), val(p), r(NULL), l(NULL) {}
+        tree(): parent(NULL), r(NULL), l(NULL), val(value_t()) {}
+        tree(const value_t &p): parent(NULL), val(p), r(NULL), l(NULL) {}
         tree(const tree &p): parent(p.parent), r(p.r), l(p.l), h(p.h), val(p.val) {}
     };
 
@@ -45,11 +46,11 @@ namespace ft
         {
             this->alloc=c.alloc;
             this->comp = c.comp;
-            this->nbrofnodes;
+            this->nbrofnodes = 0;
             this->root = copy_tree(c.root, NULL);
             this->el = alloc.allocate(1);
-            this->el = mostright(this->root);
-            std::cout << "Avl copy constructor called\n";
+            if (this->root != NULL)
+                this->el = mostright(this->root);
         }
 
         tree_s *copy_tree(tree_s *c, tree_s *par)
@@ -304,7 +305,7 @@ namespace ft
                 t->r->parent = t;
             return t;
         }
-
+public:
         tree_s *mostleft(tree_s *s)
         {
             while (s->l != NULL)
@@ -319,12 +320,12 @@ namespace ft
             return (s);
         }
 
-		bool get_next_element(tree_s *s, value_t val)
-		{
+        bool get_next_element(tree_s *s, value_t val)
+        {
             // TODO: fix this shit
             s->val = val;
             return (0);
-		}
+        }
 
         void clear(tree_s *t)
         {

@@ -12,18 +12,21 @@
 
 NAME = test
 
-FLAGS = -Wall -Wextra -Werror -std=c++98
+FLAGS = -std=c++98  #-Wall -Wextra -Werror -std=c++98
 
-CP = clang++
+DEBUG =# -fsanitize=address
+
+CP = c++
 
 SRC = main.cpp
 
 HEADER = 
 
 all: $(NAME)
+	./$(NAME)
 
 $(NAME): $(SRC) $(HEADER)
-	$(CP) $(FLAGS) $(SRC) -o $(NAME)
+	$(CP) $(FLAGS) $(DEBUG) $(SRC) -o $(NAME)
 
 clean:
 	@echo "No object files to be cleaned!"
