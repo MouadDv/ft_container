@@ -148,8 +148,10 @@ public:
   }
   
   ~map_iterator()
-    {
-    }
+  {
+    alc.destroy(end_node);
+    alc.deallocate(end_node, 1);
+  }
 
 };
 
