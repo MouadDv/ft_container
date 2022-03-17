@@ -7,6 +7,8 @@ namespace ft
   template <class T1, class T2>
   class pair {
   public:
+    typedef T1 key_type;
+    typedef T2 mapped_type;
     T1 first;
     T2 second;
   public:

@@ -36,8 +36,28 @@ namespace ft
         tree_s *el;
         size_t nbrofnodes;
     public:
-        Avl(): root(0), el(0), nbrofnodes(0) {
+        Avl(): root(0), el(0), nbrofnodes(0) {}
+        Avl(const Avl &c)
+        {
+            this->alloc=c.alloc;
+            this->comp = c.comp;
+            this->nbrofnode;
+            this->root = copy_tree(c.root, nullptr);
+            std::cout << "Avl copy constructor called\n";
         }
+
+        tree_s *copy_tree(tree_s *c, tree_s *par)
+        {
+            if (c == nullptr)
+                return (nullptr);
+            tree_s *ret = this->alloc.allocate(1);
+            this->alloc.constructor(ret, tree_s(*c));
+            ret->parent = par;
+            ret->l = copy_tree(c->l, ret);
+            ret->r = copy_tree(c->r, ret);
+            return (ret);
+        }
+
         S &get_element_by_index(F &k)
         {
             tree_s *tmp = this->root;
