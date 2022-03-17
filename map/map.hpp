@@ -28,7 +28,9 @@ namespace ft
     typedef typename allocator_type::template rebind<base_type>::other       alloc_base;
     typedef size_t                                                           size_type;
     typedef typename ft::Avl<key_type, mapped_type, Compare, Alloc>::tree_s* avlpointer;
-    typedef ft::map_iterator<avlpointer , value_type, Alloc>                 iterator;
+    typedef ft::map_iterator<avlpointer , value_type>                 iterator;
+    //TODO const_iterator declaration
+    typedef ft::map_iterator<avlpointer , value_type>                 const_iterator;
 
 
 
@@ -59,7 +61,7 @@ class value_compare
               const allocator_type& alctr = allocator_type())
       {
         this->base_tree = baseallocator.allocate(1);
-        baseallocator.constructe(this->base_tree, base_type());
+        baseallocator.construct(this->base_tree, base_type());
         this->alloc = alctr;
         this->comp = com;
         this->_size = 0;
@@ -71,7 +73,7 @@ class value_compare
        const allocator_type& alctr = allocator_type())
       {
         this->base_tree = baseallocator.allocate(1);
-        baseallocator.constructe(this->base_tree, base_type());
+        baseallocator.construct(this->base_tree, base_type());
         this->alloc = alctr;
         this->comp = com;
         this->_size = 0;
@@ -83,8 +85,16 @@ class value_compare
         this->_size = x._size;
         this->comp = x.comp;
         this->base_tree = baseallocator.allocate(1);
-        baseallocator.constructe(*this->base_tree, base_type(*(x.base_tree)));
+        baseallocator.construct(*this->base_tree, base_type(*(x.base_tree)));
       }
+
+    ft::pair<iterator,bool>insert (const value_type& val) // single element (1)
+    {
+      base_tree->insert(&(base_tree->root), val, NULL);
+      _size++;
+      return(ft::make_pair(iterator(base_tree->root, base_tree->mostleft(base_tree->root), base_tree->el), 1));
+    }
+
     ~map()
       {}
 

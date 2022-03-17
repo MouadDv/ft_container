@@ -2,13 +2,14 @@
 #ifndef MAP_ITERATOR
 #define MAP_ITERATOR
 
+#include <cstddef>
 #include "avl.hpp"
 #include "pair.hpp"
 #include "iterator_traits.hpp"
 
 namespace ft
 {
-template <typename P, typename V, typename Alloc>
+template <typename P, typename V>
 class map_iterator {
 public:
   typedef P                                                              pointer;
@@ -19,10 +20,8 @@ public:
   typedef value_type*                                                    value_pointer;
   typedef value_type&                                                    reference;
   typedef ptrdiff_t                                                      difference_type;
-  typedef typename Alloc::template rebind<tree<value_type> >::other      alloc_type;
 
 private:
-  alloc_type alc;
   pointer root;
   pointer return_node;
   pointer end_node;
@@ -31,26 +30,24 @@ private:
 
   pointer most_left(pointer c)
   {
-    while (c != nullptr)
+    while (c != NULL)
       c = c->left;
     return (c);
   }
 
   pointer most_right(pointer c)
   {
-    while (c != nullptr)
+    while (c != NULL)
       c = c->right;
     return (c);
   }
 
 public:
-  map_iterator(): root(nullptr), return_node(nullptr), end_node(nullptr)
+  map_iterator(): root(NULL), return_node(nullptr), end_node(nullptr)
   {
   }
-  map_iterator(const pointer croot, const pointer creturn): root(croot), return_node(creturn)
+  map_iterator(const pointer croot, const pointer creturn, const pointer cend): root(croot), return_node(creturn), end_node(cend)
   {
-    end_node = alc.allocate(1);
-    end_node->parent = most_right(root);
   }
   map_iterator(const map_iterator &c): root(c.root), return_node(c.return_node), end_node(c.end_node)
   {
@@ -87,19 +84,19 @@ public:
   {
     pointer tmp;
 
-    if (return_node->r != nullptr)
+    if (return_node->r != NULL)
       return_node = this->mostleft(return_node->r);
     else
     {
       tmp = return_node->l;
-      while (tmp != nullptr && return_node == tmp->r)
+      while (tmp != NULL && return_node == tmp->r)
       {
         return_node = tmp;
         tmp = tmp->parent;
       }
       return_node = tmp;
     }
-    if (return_node == nullptr)
+    if (return_node == NULL)
     {
       return_node = end_node;
     }
@@ -122,12 +119,12 @@ public:
       return_node = end_node->parent;
       return (*this);
     }
-    else if (return_node->l != nullptr)
+    else if (return_node->l != NULL)
       return_node = most_right(return_node->r);\
     else
     {
       tmp = return_node->parent;
-      while (tmp != nullptr && return_node == tmp->l)
+      while (tmp != NULL && return_node == tmp->l)
       {
         return_node = tmp;
         tmp = tmp->parent;
@@ -149,8 +146,6 @@ public:
   
   ~map_iterator()
   {
-    alc.destroy(end_node);
-    alc.deallocate(end_node, 1);
   }
 
 };

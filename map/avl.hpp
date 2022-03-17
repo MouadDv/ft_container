@@ -20,12 +20,13 @@ namespace ft
         int     h;
         value_t val;
 
-        tree(const value_t &p):parent(0), val(p), r(0), l(0) {}
+        tree(const value_t &p):parent(NULL), val(p), r(NULL), l(NULL) {}
         tree(const tree &p): parent(p.parent), r(p.r), l(p.l), h(p.h), val(p.val) {}
     };
 
     template <typename F, typename S, typename key_comp, typename Alloc>
     class Avl {
+    public:
         typedef ft::pair<const F, S> value_t;
         typedef tree<value_t> tree_s;
         typedef typename Alloc::template rebind<tree<value_t> >::other  alloc_type;
@@ -36,22 +37,27 @@ namespace ft
         tree_s *el;
         size_t nbrofnodes;
     public:
-        Avl(): root(0), el(0), nbrofnodes(0) {}
+        Avl(): root(NULL), el(NULL), nbrofnodes(0)
+        {
+            this->el = alloc.allocate(1);
+        }
         Avl(const Avl &c)
         {
             this->alloc=c.alloc;
             this->comp = c.comp;
-            this->nbrofnode;
-            this->root = copy_tree(c.root, nullptr);
+            this->nbrofnodes;
+            this->root = copy_tree(c.root, NULL);
+            this->el = alloc.allocate(1);
+            this->el = mostright(this->root);
             std::cout << "Avl copy constructor called\n";
         }
 
         tree_s *copy_tree(tree_s *c, tree_s *par)
         {
-            if (c == nullptr)
-                return (nullptr);
+            if (c == NULL)
+                return (NULL);
             tree_s *ret = this->alloc.allocate(1);
-            this->alloc.constructor(ret, tree_s(*c));
+            this->alloc.construct(ret, tree_s(*c));
             ret->parent = par;
             ret->l = copy_tree(c->l, ret);
             ret->r = copy_tree(c->r, ret);
@@ -76,7 +82,7 @@ namespace ft
             else
             {
                 value_t p = ft::make_pair(k, value_t());
-                insert(&(this->root), p, nullptr);
+                insert(&(this->root), p, NULL);
                 return (p.second);
             }
         }
@@ -103,9 +109,9 @@ namespace ft
             {
                 if(n->l && n->r)
                     return n->l->h - n->r->h;
-                else if(n->l && n->r == nullptr)
+                else if(n->l && n->r == NULL)
                     return n->l->h;
-                else if(n->l == nullptr && n->r )
+                else if(n->l == NULL && n->r )
                     return -(n->r->h);
             }
             return (0);
@@ -113,7 +119,7 @@ namespace ft
 
         void parent_set(tree_s *&n, tree_s *p)
         {
-            if (n == nullptr)
+            if (n == NULL)
                 return ;
             parent_set(n->r, n);
             n->parent = p;
@@ -203,7 +209,7 @@ namespace ft
 
         void insert(tree_s **pos, const value_t &p, tree_s *pa)
         {
-            if ((*pos) == nullptr)
+            if ((*pos) == NULL)
             {
                 (*pos) = alloc.allocate(1);
                 alloc.construct(*pos, p);
@@ -230,20 +236,20 @@ namespace ft
                 *pos = RLr(*pos);
             else if(bf(*pos) == 2 && bf((*pos)->l) == -1)
                 *pos = LRr(*pos);
-            this->el = this->root;
+            this->el->parent = mostright(this->root);
         }
 
         tree_s *erase(tree_s *t, const F &d)
         {
-            if(t == nullptr)
-                return nullptr;
+            if(t == NULL)
+                return NULL;
             if (comp(t->val.first, d))
                 t->r = erase(t->r, d);
             else if (comp(d , t->val.first))
                 t->l = erase(t->l, d);
             else if (d == t->val.first)
             {
-                if (t->l != nullptr)
+                if (t->l != NULL)
                 {
                     tree_s *d = t;
                     tree_s *tmp;
@@ -256,7 +262,7 @@ namespace ft
                     alloc.destroy(d);
                     alloc.deallocate(d, 1);
                 }
-                else if (t->r != nullptr)
+                else if (t->r != NULL)
                 {
                     tree_s *d = t;
                     tree_s *tmp;
@@ -274,7 +280,7 @@ namespace ft
                     alloc.destroy(t);
                     alloc.deallocate(t, 1);
                     this->nbrofnodes--;
-                    return nullptr;
+                    return NULL;
                 }
             }
 
@@ -301,14 +307,14 @@ namespace ft
 
         tree_s *mostleft(tree_s *s)
         {
-            while (s->l != nullptr)
+            while (s->l != NULL)
                 s = s->l;
             return (s);
         }
 
         tree_s *mostright(tree_s *s)
         {
-            while (s->r != nullptr)
+            while (s->r != NULL)
                 s = s->r;
             return (s);
         }
@@ -322,12 +328,12 @@ namespace ft
 
         void clear(tree_s *t)
         {
-            if (t == nullptr)
+            if (t == NULL)
                 return ;
             clear(t->l);
             clear(t->r);
             delete t;
-            this->root = nullptr;
+            this->root = NULL;
         }
         ~Avl(){}
     };
