@@ -320,20 +320,14 @@ public:
             return (s);
         }
 
-        bool get_next_element(tree_s *s, value_t val)
-        {
-            // TODO: fix this shit
-            s->val = val;
-            return (0);
-        }
-
         void clear(tree_s *t)
         {
             if (t == NULL)
                 return ;
             clear(t->l);
             clear(t->r);
-            delete t;
+            alloc.destroy(t);
+            alloc.deallocate(t, 1);
             this->root = NULL;
         }
         ~Avl(){}

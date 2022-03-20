@@ -27,7 +27,6 @@ private:
   pointer end_node;
 
 
-
   pointer most_left(pointer c)
   {
     while (c != NULL)
@@ -85,10 +84,12 @@ public:
     pointer tmp;
 
     if (return_node->r != NULL)
+    {
       return_node = mostleft(return_node->r);
+    }
     else
     {
-      tmp = return_node->l;
+      tmp = return_node->parent;
       while (tmp != NULL && return_node == tmp->r)
       {
         return_node = tmp;
@@ -120,7 +121,7 @@ public:
       return (*this);
     }
     else if (return_node->l != NULL)
-      return_node = mostright(return_node->r);\
+      return_node = mostright(return_node->l);
     else
     {
       tmp = return_node->parent;
@@ -143,21 +144,21 @@ public:
   {
     return (&operator*());
   }
-
+private:
   pointer mostleft(pointer c)
   {
-    while (c != NULL)
+    while (c->l != NULL)
       c = c->l;
     return (c);
   }
 
   pointer mostright(pointer c)
   {
-    while (c != NULL)
+    while (c->r != NULL)
       c = c->r;
     return (c);
   }
-
+public:
   ~map_iterator()
   {
   }
