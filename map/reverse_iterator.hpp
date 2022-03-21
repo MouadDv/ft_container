@@ -45,7 +45,8 @@ public:
 	reference operator*() const
 	{
 		iterator_type tmp = _it;
-        return (*(--tmp));
+        --tmp;
+        return (*tmp);
 	}
 
 	pointer operator->() const

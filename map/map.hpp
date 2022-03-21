@@ -25,6 +25,7 @@ namespace ft
     typedef typename allocator_type::pointer                                 pointer;
     typedef typename allocator_type::reference                               reference;
     typedef Avl<key_type, mapped_type, Compare, Alloc>                       base_type;
+    typedef typename base_type::tree_s                                       treepointer;
     typedef typename allocator_type::template rebind<base_type>::other       alloc_base;
     typedef size_t                                                           size_type;
     typedef typename ft::Avl<key_type, mapped_type, Compare, Alloc>::tree_s* avlpointer;
@@ -60,41 +61,76 @@ class value_compare
   public:
     explicit map (const key_compare& com = key_compare(),
               const allocator_type& alctr = allocator_type())
-      {
-        this->base_tree = baseallocator.allocate(1);
-        baseallocator.construct(this->base_tree, base_type());
-        this->alloc = alctr;
-        this->comp = com;
-        this->_size = 0;
-      }
+    {
+      this->base_tree = baseallocator.allocate(1);
+      baseallocator.construct(this->base_tree, base_type());
+      this->alloc = alctr;
+      this->comp = com;
+      this->_size = 0;
+    }
 
     template <class InputIterator>
     map (InputIterator first, InputIterator last,
        const key_compare& com = key_compare(),
        const allocator_type& alctr = allocator_type())
-      {
-        this->base_tree = baseallocator.allocate(1);
-        baseallocator.construct(this->base_tree, base_type());
-        this->alloc = alctr;
-        this->comp = com;
-        this->_size = 0;
-        insert(first, last);
-      }
+    {
+      this->base_tree = baseallocator.allocate(1);
+      baseallocator.construct(this->base_tree, base_type());
+      this->alloc = alctr;
+      this->comp = com;
+      this->_size = 0;
+      insert(first, last);
+    }
     map (const map& x)
+    {
+      this->alloc = x.alloc;
+      this->_size = x._size;
+      this->comp = x.comp;
+      this->base_tree = baseallocator.allocate(1);
+      baseallocator.construct(*this->base_tree, base_type(*(x.base_tree)));
+    }
+
+    iterator ret_it(const key_type& k)
+    {
+      if (base_tree->root != NULL)
       {
-        this->alloc = x.alloc;
-        this->_size = x._size;
-        this->comp = x.comp;
-        this->base_tree = baseallocator.allocate(1);
-        baseallocator.construct(*this->base_tree, base_type(*(x.base_tree)));
+        treepointer *tmp = base_tree->root;
+        while (tmp)
+        {
+          if (comp(k, tmp->val.first) == true)
+            tmp = tmp->l;
+          else if (comp(tmp->val.first, k) == true)
+            tmp = tmp->r;
+          else {
+            return (iterator(base_tree->root, tmp, base_tree->el));
+          }
+        }
       }
+      return (end());
+    }
 
     ft::pair<iterator,bool>insert (const value_type& val) // single element (1)
     {
       base_tree->insert(&(base_tree->root), val, NULL);
       _size++;
 
-      return(ft::make_pair(iterator(base_tree->root, base_tree->mostleft(base_tree->root), base_tree->el), 1));
+      return(ft::make_pair(ret_it(val.first), 1));
+    }
+
+    iterator insert (iterator position, const value_type& val)
+    {
+      (void)position;
+      return ((this->insert(val)).first);
+    }
+
+    template <class InputIterator>
+    void insert (InputIterator first, InputIterator last)
+    {
+      while (first != last)
+      {
+        this->insert(*first);
+        first++;
+      }
     }
 
     iterator begin()
@@ -134,6 +170,39 @@ class value_compare
       return (Alloc::template rebind<base_type>.max_size());
     }
 
+    mapped_type& operator[] (const key_type& k)
+    {
+      return ((*((this->insert(make_pair(k,mapped_type()))).first)).second);
+    }
+
+    void erase (iterator position)
+    {
+      if (this->empty() == true)
+        return ;
+      base_tree->erase(base_tree->root, (*position).first);
+    }
+
+    size_type erase (const key_type& k)
+    {
+      if (this->empty() == true)
+        return 0;
+      if (ret_it(k) == end())
+        return 0;
+      base_tree->erase(base_tree->root, k);
+      return 1;
+    }
+
+    void erase (iterator first, iterator last)
+    {
+      if (this->empty() == true)
+        return ;
+      while (first != last)
+      {
+        this->erase(first);
+        first++;
+      }
+    }
+
     void swap (map& x)
     {
       base_type *tmp = this->base_tree;
@@ -158,10 +227,26 @@ class value_compare
       return (value_compare(comp));
     }
 
+    iterator find (const key_type& k)
+    {
+      return (ret_it(k));
+    }
+
+    const_iterator find (const key_type& k) const
+    {
+      return (ret_it(k));
+    }
+
+    size_type count (const key_type& k) const
+    {
+      if (find(k) != end())
+        return 1;
+      return 0;
+    }
 
     iterator lower_bound (const key_type& k) // edit return to return iterator
     {
-      base_type *tmp = base_tree->root;
+      treepointer *tmp = base_tree->root;
       iterator last = end();
       last--;
 
@@ -196,7 +281,7 @@ class value_compare
 
     iterator upper_bound (const key_type& k)
     {
-      base_type *tmp = base_tree->root;
+      treepointer *tmp = base_tree->root;
       iterator last = end();
       last--;
 
