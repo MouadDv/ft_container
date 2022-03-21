@@ -6,7 +6,7 @@
 #include "pair.hpp"
 #include "avl.hpp"
 #include "map_iterator.hpp"
-//#include "bidirectional_iterator.hpp"
+#include "reverse_iterator.hpp"
 
 namespace ft
 {
@@ -29,8 +29,9 @@ namespace ft
     typedef size_t                                                           size_type;
     typedef typename ft::Avl<key_type, mapped_type, Compare, Alloc>::tree_s* avlpointer;
     typedef ft::map_iterator<avlpointer , value_type>                        iterator;
-    //TODO const_iterator declaration
     typedef ft::map_iterator<avlpointer , value_type>                        const_iterator;
+    typedef ft::reverse_iterator<iterator>                                   reverse_iterator;
+    typedef ft::reverse_iterator<iterator>                                   const_reverse_iterator;
 
 
 
@@ -104,6 +105,16 @@ class value_compare
     iterator end()
     {
       return (iterator(base_tree->root, base_tree->el, base_tree->el));
+    }
+
+    reverse_iterator rbegin()
+    {
+      return (reverse_iterator(end()));
+    }
+
+    reverse_iterator rend()
+    {
+      return (reverse_iterator(begin()));
     }
 
     bool empty() const

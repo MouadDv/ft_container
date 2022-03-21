@@ -17,9 +17,9 @@ int main()
     std::cout << "it val " << (*it).first << " , " << (*it).second << "\n";
     ++it;
   }
-  ft::map<int, int>::iterator en = mymap.end();
-  while(en != mymap.begin()){
+  ft::map<int, int>::reverse_iterator en = mymap.rbegin();
+  while(en != mymap.rend()){
     std::cout << "it val " << (*en).first << " , " << (*en).second << "\n";
-    --en;
+    ++en;
   }
 }
