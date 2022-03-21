@@ -10,7 +10,7 @@
 #                                                                                                    #
 # ************************************************************************************************** #
 
-COMPILER = clang++
+COMPILER = c++
 FLAGS_DEBUG =  -Wall -Wextra -Werror -fsanitize=address -g3
 FLAGS = # --std=c++98#  -Wall -Wextra -Werror
 

@@ -30,9 +30,9 @@ namespace ft
     typedef size_t                                                           size_type;
     typedef typename ft::Avl<key_type, mapped_type, Compare, Alloc>::tree_s* avlpointer;
     typedef ft::map_iterator<avlpointer , value_type>                        iterator;
-    typedef ft::map_iterator<avlpointer , value_type>                        const_iterator;
+    typedef ft::map_iterator<avlpointer , const value_type>                  const_iterator;
     typedef ft::reverse_iterator<iterator>                                   reverse_iterator;
-    typedef ft::reverse_iterator<iterator>                                   const_reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator>                             const_reverse_iterator;
 
 
 
@@ -138,9 +138,19 @@ class value_compare
       return (iterator(base_tree->root, base_tree->mostleft(base_tree->root), base_tree->el));
     }
 
+    const_iterator begin() const
+    {
+      return (const_iterator(base_tree->root, base_tree->mostleft(base_tree->root), base_tree->el));
+    }
+
     iterator end()
     {
       return (iterator(base_tree->root, base_tree->el, base_tree->el));
+    }
+
+    const_iterator end() const
+    {
+      return (const_iterator(base_tree->root, base_tree->el, base_tree->el));
     }
 
     reverse_iterator rbegin()
@@ -148,9 +158,19 @@ class value_compare
       return (reverse_iterator(end()));
     }
 
+    const_reverse_iterator rbegin() const
+    {
+      return (const_reverse_iterator(end()));
+    }
+
     reverse_iterator rend()
     {
       return (reverse_iterator(begin()));
+    }
+
+    const_reverse_iterator rend() const
+    {
+      return (const_reverse_iterator(begin()));
     }
 
     bool empty() const
@@ -278,6 +298,40 @@ class value_compare
       return end();
     }
 
+    const_iterator lower_bound (const key_type& k) const
+    {
+      treepointer *tmp = base_tree->root;
+      iterator last = end();
+      last--;
+
+      while (tmp != NULL)
+      {
+        if (k == tmp->val.first)
+          return (const_iterator(base_tree->root, tmp, base_tree->el));
+        else if (comp(k, tmp->val.first) == true)
+        {
+          if (tmp->l == NULL)
+            break ;
+          tmp = tmp->l;
+        }
+        else if (comp(k, tmp->val.first) == false)
+        {
+          if (tmp->r == NULL)
+            break ;
+          tmp = tmp->r;
+        }
+      }
+      if (comp(k, tmp->val.first) == false)
+      {
+        while (tmp->parent != NULL && comp(k, tmp->val.first) == false)
+          tmp = tmp->parent;
+        return (const_iterator(base_tree->root, tmp, base_tree->el));
+      }
+      else if (k < last->first && comp(k, tmp->val.first) == true)
+        return (const_iterator(base_tree->root, tmp, base_tree->el));
+      return end();
+    }
+
 
     iterator upper_bound (const key_type& k)
     {
@@ -316,9 +370,52 @@ class value_compare
       return end();
     }
 
+    const_iterator upper_bound (const key_type& k) const
+    {
+      treepointer *tmp = base_tree->root;
+      iterator last = end();
+      last--;
+
+      while (tmp != NULL)
+      {
+        if (k == tmp->val.first)
+        {
+          const_iterator ret(base_tree->root, tmp, base_tree->el);
+          return (++ret);
+        }
+        else if (comp(k, tmp->val.first) == true)
+        {
+          if (tmp->l == NULL)
+            break ;
+          tmp = tmp->l;
+        }
+        else if (comp(k, tmp->val.first) == false)
+        {
+          if (tmp->r == NULL)
+            break ;
+          tmp = tmp->r;
+        }
+      }
+      if (comp(k, tmp->val.first) == false)
+      {
+        while (tmp->parent != NULL && comp(k, tmp->val.first) == false)
+          tmp = tmp->parent;
+        return (const_iterator(base_tree->root, tmp, base_tree->el));
+      }
+      else if (k < last->first && comp(k, tmp->val.first) == true)
+        return (const_iterator(base_tree->root, tmp, base_tree->el));
+      return end();
+    }
+
+
     ft::pair<iterator, iterator>  equal_range (const key_type& k)
     {
       return ft::pair<iterator, iterator>(lower_bound(k), upper_bound(k));
+    }
+
+    ft::pair<const_iterator, const_iterator>  equal_range (const key_type& k) const
+    {
+      return ft::pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k));
     }
 
     allocator_type get_allocator() const
