@@ -2251,24 +2251,24 @@ int main()
     TEST_CASE(testObservers)
     std::cout << std::endl;
 */
-    std::cout << YELLOW << "Testing Operations Methods;" << RESET << std::endl;
-    TEST_CASE(testOperations)
-    std::cout << std::endl;
+//     std::cout << YELLOW << "Testing Operations Methods;" << RESET << std::endl;
+//     TEST_CASE(testOperations)
+//     std::cout << std::endl;
 
-    std::cout << YELLOW << "Testing Allocator Methods;" << RESET << std::endl;
-    TEST_CASE(testAllocatorMethodes)
-    std::cout << std::endl;
+//     std::cout << YELLOW << "Testing Allocator Methods;" << RESET << std::endl;
+//     TEST_CASE(testAllocatorMethodes)
+//     std::cout << std::endl;
 
-    std::cout << YELLOW << "Testing Retional Operators; " << RESET << std::endl;
-    TEST_CASE(testRetionalOperators);
-  		tm_p->right->hight = cal_hight(tm_p->right);
-			tm_p->hight = cal_hight(tm_p);
-		return tm_p;
-	}
-  std::cout << std::endl;
+//     std::cout << YELLOW << "Testing Retional Operators; " << RESET << std::endl;
+//     TEST_CASE(testRetionalOperators);
+//   		tm_p->right->hight = cal_hight(tm_p->right);
+// 			tm_p->hight = cal_hight(tm_p);
+// 		return tm_p;
+// 	}
+//   std::cout << std::endl;
 
-    std::cout << YELLOW << "Testing Non-Member Swap  ; " << RESET << std::endl;
-    TEST_CASE(testNonMemberSwap);
-    std::cout << std::endl;
+//     std::cout << YELLOW << "Testing Non-Member Swap  ; " << RESET << std::endl;
+//     TEST_CASE(testNonMemberSwap);
+//     std::cout << std::endl;
     return 0;
 }
