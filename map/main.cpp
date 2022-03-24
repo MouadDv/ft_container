@@ -1,25 +1,21 @@
 #include "pair.hpp"
 #include "map.hpp"
-
+#include <map>
 
 
 int main()
 {
-  ft::map<int, int> mymap;
 
-  for (int i = 0; i < 10; i++)
-  {
-    mymap.insert(ft::pair<const int, int>(i, i));
-  }
-  ft::map<int, int>::iterator it = mymap.begin();
-  while (it != mymap.end())
-  {
-    std::cout << "it val " << (*it).first << " , " << (*it).second << "\n";
-    ++it;
-  }
-  ft::map<int, int>::reverse_iterator en = mymap.rbegin();
-  while(en != mymap.rend()){
-    std::cout << "it val " << (*en).first << " , " << (*en).second << "\n";
-    ++en;
-  }
+  std::map<int, int> m1;
+  ft::map<int, int> ft_m1;
+
+  for (size_t i = 0; i < 10; i++)
+    {
+      m1.insert(std::make_pair(i, i));
+      ft_m1.insert(ft::make_pair(i, i));
+    }
+
+  std::map<int, int> const m2(m1.rbegin(), m1.rend());
+  ft::map<int, int> const ft_m2(ft_m1.rbegin(), ft_m1.rend());
+
 }

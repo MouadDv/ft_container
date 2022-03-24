@@ -12,7 +12,7 @@
 
 COMPILER = c++
 FLAGS_DEBUG =  -Wall -Wextra -Werror -fsanitize=address -g3
-FLAGS = --std=c++98#  -Wall -Wextra -Werror
+FLAGS = --std=c++11 -fsanitize=address # -Wall -Wextra -Werror
 
 vector_tle:
 	@$(COMPILER) $(FLAGS_DEBUG)	Vector_tests_tle.cpp -o vector.out 

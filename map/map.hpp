@@ -141,8 +141,7 @@ class value_compare
     template <class InputIterator>
     map (InputIterator first, InputIterator last,
        const key_compare& com = key_compare(),
-       const allocator_type& alctr = allocator_type(),
-	   typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = nullptr)
+       const allocator_type& alctr = allocator_type())
     {
       this->base_tree = baseallocator.allocate(1);
       baseallocator.construct(this->base_tree, base_type());
