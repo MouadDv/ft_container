@@ -8,6 +8,7 @@
 #include "map_iterator.hpp"
 #include "reverse_iterator.hpp"
 #include "is_integral.hpp"
+#include <vector>
 
 namespace ft
 {
@@ -121,7 +122,7 @@ class value_compare
     }
 };
 
-  private:
+  public:
     base_type       *base_tree;
     alloc_base       baseallocator;
     key_compare      comp;
@@ -143,20 +144,31 @@ class value_compare
        const key_compare& com = key_compare(),
        const allocator_type& alctr = allocator_type())
     {
-      this->base_tree = baseallocator.allocate(1);
-      baseallocator.construct(this->base_tree, base_type());
       this->alloc = alctr;
       this->comp = com;
+      this->base_tree = baseallocator.allocate(1);
+      baseallocator.construct(this->base_tree, base_type());
       this->_size = 0;
       insert(first, last);
     }
     map (const map& x)
     {
+      this->base_tree = baseallocator.allocate(1);
+      baseallocator.construct(this->base_tree, *(x.base_tree));
       this->alloc = x.alloc;
       this->_size = x._size;
       this->comp = x.comp;
+    }
+
+    map& operator= (const map& x)
+    {
+      this->alloc = x.alloc;
+      this->comp = x.comp;
+      this->clear();
       this->base_tree = baseallocator.allocate(1);
       baseallocator.construct(this->base_tree, *(x.base_tree));
+      this->_size = x._size;
+      return (*this);
     }
 
     iterator ret_it(const key_type& k)
@@ -199,10 +211,13 @@ class value_compare
 
     ft::pair<iterator,bool>insert (const value_type& val) // single element (1)
     {
-      base_tree->insert(&(base_tree->root), val, NULL);
-      _size++;
-
-      return(ft::make_pair(ret_it(val.first), 1));
+      if (ret_it(val.first) == end())
+      {
+        base_tree->insert(base_tree->root, val, NULL);
+        _size++;
+        return(ft::make_pair(ret_it(val.first), 1));
+      }
+      return(ft::make_pair(ret_it(val.first), 0));
     }
 
     iterator insert (iterator position, const value_type& val)
@@ -223,11 +238,15 @@ class value_compare
 
     iterator begin()
     {
+      if (this->empty() == true)
+        return (iterator(base_tree->root, base_tree->el, base_tree->el));
       return (iterator(base_tree->root, base_tree->mostleft(base_tree->root), base_tree->el));
     }
 
     const_iterator begin() const
     {
+      if (this->empty() == true)
+        return (const_iterator(base_tree->root, base_tree->el, base_tree->el));
       return (const_iterator(base_tree->root, base_tree->mostleft(base_tree->root), base_tree->el));
     }
 
@@ -263,9 +282,9 @@ class value_compare
 
     bool empty() const
     {
-      if (this->_size == 0)
-        return (0);
-      return (1);
+      if (base_tree->root == NULL || this->_size == 0)
+        return (1);
+      return (0);
     }
 
     size_type size() const
@@ -287,27 +306,37 @@ class value_compare
     {
       if (this->empty() == true)
         return ;
-      base_tree->erase(base_tree->root, (*position).first);
+      this->erase((*position).first);
     }
 
     size_type erase (const key_type& k)
     {
+      if(base_tree->root == NULL)
+        return 0;
       if (this->empty() == true)
         return 0;
       if (ret_it(k) == end())
         return 0;
       base_tree->erase(base_tree->root, k);
+      this->_size--;
       return 1;
     }
 
     void erase (iterator first, iterator last)
     {
       if (this->empty() == true)
-        return ;
+        {
+          return ;
+        }
+      std::vector<key_type> a;
       while (first != last)
       {
-        this->erase(first);
+        a.push_back(first->first);
         first++;
+      }
+      for (typename std::vector<key_type>::iterator it = a.begin(); it != a.end(); it++)
+      {
+        this->erase(*it);
       }
     }
 
@@ -323,7 +352,11 @@ class value_compare
 
     void clear()
     {
+      if (empty() == true)
+        return ;
       this->base_tree->clear(base_tree->root);
+      this->_size = 0;
+      //erase(begin(), end());
     }
 
     key_compare key_comp() const
@@ -512,7 +545,9 @@ class value_compare
     }
 
     ~map()
-      {}
+      {
+        this->clear();
+      }
 
   };
 }

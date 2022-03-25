@@ -87,10 +87,10 @@ public:
   map_iterator& operator++()
   {
     treepointer tmp;
-
     if (return_node->r != NULL)
     {
-      return_node = mostleft(return_node->r);
+      return_node = return_node->r;
+      return_node = mostleft(return_node);
     }
     else
     {

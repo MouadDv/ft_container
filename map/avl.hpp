@@ -38,7 +38,7 @@ namespace ft
         tree_s *el;
         size_t nbrofnodes;
     public:
-        Avl(): root(NULL), el(NULL), nbrofnodes(0)
+        Avl(): root(NULL), nbrofnodes(0)
         {
             this->el = alloc.allocate(1);
         }
@@ -46,11 +46,11 @@ namespace ft
         {
             this->alloc=c.alloc;
             this->comp = c.comp;
-            this->nbrofnodes = 0;
+            this->nbrofnodes = c.nbrofnodes;
             this->root = copy_tree(c.root, NULL);
             this->el = alloc.allocate(1);
             if (this->root != NULL)
-                this->el = mostright(this->root);
+                this->el->parent = mostright(this->root);
         }
 
         tree_s *copy_tree(tree_s *c, tree_s *par)
@@ -104,7 +104,7 @@ namespace ft
             return 1;
         }
 
-        int bf(tree_s *n)
+        int bf(tree_s *&n)
         {
             if (n)
             {
@@ -208,39 +208,39 @@ namespace ft
             return tp2;
         }
 
-        void insert(tree_s **pos, const value_t &p, tree_s *pa)
+        void insert(tree_s *&pos, const value_t &p, tree_s *pa)
         {
-            if ((*pos) == NULL)
+            if (pos == NULL)
             {
-                (*pos) = alloc.allocate(1);
-                alloc.construct(*pos, p);
-                (*pos)->h = 1;
-                (*pos)->parent = pa;
+                pos = alloc.allocate(1);
+                alloc.construct(pos, p);
+                pos->h = 1;
+                pos->parent = pa;
                 this->nbrofnodes++;
                 return ;
             }
             else
             {
-                if (p.first == (*pos)->val.first)
+                if (p.first == pos->val.first)
                     return ;
-                else if (!comp((*pos)->val.first, p.first))
-                    insert(&((*pos)->l), p, *pos);
-                else if (!comp(p.first, (*pos)->val.first))
-                    insert(&((*pos)->r), p, *pos);
+                else if (!comp(pos->val.first, p.first))
+                    insert(pos->l, p, pos);
+                else if (!comp(p.first, pos->val.first))
+                    insert(pos->r, p, pos);
             }
-            (*pos)->h = calheight(*pos);
-            if(bf(*pos) == 2 && bf((*pos)->l) == 1)
-                *pos = Lr(*pos);
-            else if(bf(*pos) == -2 && bf((*pos)->r) == -1)
-                *pos = Rr(*pos);
-            else if(bf(*pos) == -2 && bf((*pos)->r) == 1)
-                *pos = RLr(*pos);
-            else if(bf(*pos) == 2 && bf((*pos)->l) == -1)
-                *pos = LRr(*pos);
+            pos->h = calheight(pos);
+            if(bf(pos) == 2 && bf(pos->l) == 1)
+                pos = Lr(pos);
+            else if(bf(pos) == -2 && bf(pos->r) == -1)
+                pos = Rr(pos);
+            else if(bf(pos) == -2 && bf(pos->r) == 1)
+                pos = RLr(pos);
+            else if(bf(pos) == 2 && bf(pos->l) == -1)
+                pos = LRr(pos);
             this->el->parent = mostright(this->root);
         }
 
-        tree_s *erase(tree_s *t, const F &d)
+        tree_s *erase(tree_s *&t, const F &d)
         {
             if(t == NULL)
                 return NULL;
@@ -248,7 +248,7 @@ namespace ft
                 t->r = erase(t->r, d);
             else if (comp(d , t->val.first))
                 t->l = erase(t->l, d);
-            else if (d == t->val.first)
+            else
             {
                 if (t->l != NULL)
                 {
@@ -284,7 +284,6 @@ namespace ft
                     return NULL;
                 }
             }
-
             t->h = calheight(t);
             if (t->l)
                 t->l->h = calheight(t->l);
@@ -308,6 +307,8 @@ namespace ft
 public:
         tree_s *mostleft(tree_s *s)
         {
+            if (s == NULL)
+                return (s);
             while (s->l != NULL)
                 s = s->l;
             return (s);
@@ -315,12 +316,14 @@ public:
 
         tree_s *mostright(tree_s *s)
         {
+            if (s == NULL)
+                return (s);
             while (s->r != NULL)
                 s = s->r;
             return (s);
         }
 
-        void clear(tree_s *t)
+        void clear(tree_s *&t)
         {
             if (t == NULL)
                 return ;
@@ -328,9 +331,12 @@ public:
             clear(t->r);
             alloc.destroy(t);
             alloc.deallocate(t, 1);
-            this->root = NULL;
+            t = NULL;
         }
-        ~Avl(){}
+        ~Avl()
+        {
+            alloc.deallocate(el, 1);
+        }
     };
 
 }

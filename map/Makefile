@@ -12,7 +12,7 @@
 
 NAME = test
 
-FLAGS = -std=c++98  #-Wall -Wextra -Werror -std=c++98
+FLAGS = -std=c++11  -g -fsanitize=address #-Wall -Wextra -Werror -std=c++98
 
 DEBUG =# -fsanitize=address
 
