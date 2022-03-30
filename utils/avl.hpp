@@ -36,9 +36,8 @@ namespace ft
         key_comp comp;
         tree_s *root;
         tree_s *el;
-        size_t nbrofnodes;
     public:
-        Avl(): root(NULL), nbrofnodes(0)
+        Avl(): root(NULL)
         {
             this->el = alloc.allocate(1);
         }
@@ -46,7 +45,6 @@ namespace ft
         {
             this->alloc=c.alloc;
             this->comp = c.comp;
-            this->nbrofnodes = c.nbrofnodes;
             this->root = copy_tree(c.root, NULL);
             this->el = alloc.allocate(1);
             if (this->root != NULL)
@@ -216,7 +214,6 @@ namespace ft
                 alloc.construct(pos, p);
                 pos->h = 1;
                 pos->parent = pa;
-                this->nbrofnodes++;
                 return ;
             }
             else
@@ -280,7 +277,6 @@ namespace ft
                 {
                     alloc.destroy(t);
                     alloc.deallocate(t, 1);
-                    this->nbrofnodes--;
                     return NULL;
                 }
             }
