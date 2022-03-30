@@ -3,80 +3,11 @@
 #define MAP_CLASS
 
 #include <iostream>
-#include "pair.hpp"
-#include "avl.hpp"
+#include "../vector/vector.hpp"
+#include "../utils/pair.hpp"
+#include "../utils/avl.hpp"
 #include "map_iterator.hpp"
 #include "reverse_iterator.hpp"
-#include "is_integral.hpp"
-#include <vector>
-
-namespace ft
-{
-	template<bool Cond, class T = void> struct enable_if;
-
-	template<class T> 
-	struct enable_if<true, T> { typedef T type; };
-}
-
-namespace ft
-{
-	template <class InputIterator1, class InputIterator2>
-  	bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2)
-	{
-		while (first1!=last1)
-		{
-			if (first2==last2 || *first2<*first1) 
-				return false;
-			else if (*first1<*first2) 
-				return true;
-			++first1; ++first2;
-		}
-		return (first2!=last2);
-	}
-	template <class InputIterator1, class InputIterator2, class Compare>
- 	bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, Compare comp)
-	{
-		while (first1!=last1)
-		{
-			if (first2==last2 || comp(*first2, *first1)) 
-				return false;
-			else if (comp(*first1, *first2)) 
-				return true;
-			++first1; ++first2;
-		}
-		return (first2!=last2);
-	}
-
-}
-
-namespace ft
-{
-	// equality
-	template <class InputIterator1, class InputIterator2>
- 	bool equal ( InputIterator1 first1, InputIterator1 last1, InputIterator2 first2 )
-	{
-		while (first1!=last1)
-		{
-			if (!(*first1 == *first2))
-				return false;
-			++first1; ++first2;
-		}
-		return true;
-	}
-	// predicate
-	template <class InputIterator1, class InputIterator2, class BinaryPredicate>
-  	bool equal (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate pred)
-	{
-		while (first1!=last1)
-		{
-			if (!pred(*first1,*first2)) 
-				return false;
-			++first1; ++first2;
-		}
-		return true;
-	}
-
-}
 
 namespace ft
 {
@@ -122,7 +53,7 @@ class value_compare
     }
 };
 
-  public:
+  private:
     base_type       *base_tree;
     alloc_base       baseallocator;
     key_compare      comp;
@@ -170,7 +101,7 @@ class value_compare
       this->_size = x._size;
       return (*this);
     }
-
+private:
     iterator ret_it(const key_type& k)
     {
       if (base_tree->root != NULL)
@@ -189,8 +120,7 @@ class value_compare
       }
       return (end());
     }
-
-	const_iterator ret_it(const key_type& k) const
+    const_iterator ret_it(const key_type& k) const
     {
       if (base_tree->root != NULL)
       {
@@ -209,7 +139,8 @@ class value_compare
       return (end());
     }
 
-    ft::pair<iterator,bool>insert (const value_type& val) // single element (1)
+public:
+    ft::pair<iterator,bool>insert (const value_type& val)
     {
       if (ret_it(val.first) == end())
       {
@@ -328,13 +259,13 @@ class value_compare
         {
           return ;
         }
-      std::vector<key_type> a;
+      ft::vector<key_type> a;
       while (first != last)
       {
         a.push_back(first->first);
         first++;
       }
-      for (typename std::vector<key_type>::iterator it = a.begin(); it != a.end(); it++)
+      for (typename ft::vector<key_type>::iterator it = a.begin(); it != a.end(); it++)
       {
         this->erase(*it);
       }
@@ -568,8 +499,7 @@ class value_compare
 	bool operator<  ( const ft::map<Key,T,Compare,Alloc>& lhs,
 						const ft::map<Key,T,Compare,Alloc>& rhs )
 	{
-		return ft::lexicographical_compare(lhs.begin(), lhs.end(),
-											rhs.begin(), rhs.end());
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 
 	template <class Key, class T, class Compare, class Alloc>

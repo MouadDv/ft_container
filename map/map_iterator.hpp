@@ -3,9 +3,9 @@
 #define MAP_ITERATOR
 
 #include <cstddef>
-#include "avl.hpp"
-#include "pair.hpp"
-#include "iterator_traits.hpp"
+#include "../utils/avl.hpp"
+#include "../utils/pair.hpp"
+#include "../utils/iterator_traits.hpp"
 
 namespace ft
 {
