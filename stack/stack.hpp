@@ -18,7 +18,7 @@ public:
 	/* Member functions */
 
 	// Constructors/Destructor
-	explicit stack (const container_type& ctnr = container_type()) : m_C(ctnr)
+	explicit stack (const container_type& ctnr = container_type()) : c(ctnr)
 	{
 
 	}
@@ -26,36 +26,36 @@ public:
 	bool empty() const
 	{
 		// This member function effectively calls member empty of the underlying container object.
-		return m_C.empty();
+		return c.empty();
 	}
 
 	size_type size() const
 	{
 		// This member function effectively calls member size of the underlying container object.
-		return m_C.size();
+		return c.size();
 	}
 
 	value_type& top()
 	{
 		// This member function effectively calls member back of the underlying container object.
-		return m_C.back();
+		return c.back();
 	}
 
 	const value_type& top() const
 	{
-		return m_C.back();
+		return c.back();
 	}
 
 	void push (const value_type& val)
 	{
 		// This member function effectively calls the member function push_back of the underlying container object.
-		m_C.push_back(val);
+		c.push_back(val);
 	}
 
 	void pop()
 	{
 		// This member function effectively calls the member function pop_back of the underlying container object.
-		m_C.pop_back();
+		c.pop_back();
 	}
 
 	/* Non-member function overloads */
@@ -63,39 +63,39 @@ public:
 	template <class Tp, class Cntr>
 	friend bool operator== (const ft::stack<Tp,Cntr>& lhs, const ft::stack<Tp,Cntr>& rhs)
 	{
-		return (lhs.m_C == rhs.m_C);
+		return (lhs.c == rhs.c);
 	}
 
 	template <class Tp, class Cntr>
 	friend bool operator!= (const ft::stack<Tp,Cntr>& lhs, const ft::stack<Tp,Cntr>& rhs)
 	{
-		return (lhs.m_C != rhs.m_C);
+		return (lhs.c != rhs.c);
 	}
 
 	template <class Tp, class Cntr>
 	friend bool operator<  (const ft::stack<Tp,Cntr>& lhs, const ft::stack<Tp,Cntr>& rhs)
 	{
-		return (lhs.m_C < rhs.m_C);
+		return (lhs.c < rhs.c);
 	}
 
 	template <class Tp, class Cntr>
 	friend bool operator<= (const ft::stack<Tp,Cntr>& lhs, const ft::stack<Tp,Cntr>& rhs)
 	{
-		return (lhs.m_C <= rhs.m_C);
+		return (lhs.c <= rhs.c);
 	}
 
 	template <class Tp, class Cntr>
 	friend bool operator>  (const ft::stack<Tp,Cntr>& lhs, const ft::stack<Tp,Cntr>& rhs)
 	{
-		return (lhs.m_C > rhs.m_C);
+		return (lhs.c > rhs.c);
 	}
 
 	template <class Tp, class Cntr>
 	friend bool operator>= (const ft::stack<Tp,Cntr>& lhs, const ft::stack<Tp,Cntr>& rhs)
 	{
-		return (lhs.m_C >= rhs.m_C);
+		return (lhs.c >= rhs.c);
 	}
 
-private:
-	container_type m_C;
+protected:
+	container_type c;
 };

@@ -2,7 +2,6 @@
 #include "../utils/iterator_traits.hpp"
 #include "../utils/enable_if.hpp"
 #include <type_traits>
-#include <new>
 #include <iostream>
 #include <string>
 #pragma once
@@ -42,6 +41,11 @@ public:
 		*this = src;
 	}
 
+	pointer base() const
+	{
+		return (_ptr);
+	}
+
 	RandomAccessIterator & operator=(RandomAccessIterator const & rhs)
 	{
 		this->_ptr = rhs._ptr;
@@ -71,11 +75,11 @@ public:
 		a == b
 		a != b
 	*/
-	bool operator==(const RandomAccessIterator & it) const 
+	bool operator==(const RandomAccessIterator &it) const 
 	{ 
 		return this->_ptr == it._ptr; 
 	}
-	bool operator!=(const RandomAccessIterator & it) const 
+	bool operator!=(const RandomAccessIterator &it) const 
 	{ 
 		return this->_ptr != it._ptr; 
 	}
@@ -158,10 +162,6 @@ public:
 	{
 		return RandomAccessIterator(_ptr + other);
 	}
-	friend RandomAccessIterator operator+(const difference_type & n, const RandomAccessIterator & it) // n + a
-	{
-			return RandomAccessIterator(n + it._ptr);
-	}
 	
 	RandomAccessIterator operator-(const difference_type & other) const // a - n
 	{
@@ -230,3 +230,46 @@ public:
 private:
 		T* _ptr;
 };
+
+template<class T>
+RandomAccessIterator<T> operator+(const std::ptrdiff_t & n, const RandomAccessIterator<T> & it) // n + a
+{
+	return RandomAccessIterator<T>(n + it.base());
+}
+
+template <class _Iter1, class _Iter2>
+bool operator==(const RandomAccessIterator<_Iter1>& __x, const RandomAccessIterator<_Iter2>& __y)
+{
+    return __x.base() == __y.base();
+}
+
+template <class _Iter1, class _Iter2>
+bool operator!=(const RandomAccessIterator<_Iter1>& __x, const RandomAccessIterator<_Iter2>& __y)
+{
+    return !(__x == __y);
+}
+
+template <class _Iter1, class _Iter2>
+bool operator<(const RandomAccessIterator<_Iter1>& __x, const RandomAccessIterator<_Iter2>& __y)
+{
+    return __x.base() < __y.base();
+}
+
+template <class _Iter1, class _Iter2>
+bool operator>(const RandomAccessIterator<_Iter1>& __x, const RandomAccessIterator<_Iter2>& __y)
+{
+    return __y < __x;
+}
+
+template <class _Iter1, class _Iter2>
+bool operator>=(const RandomAccessIterator<_Iter1>& __x, const RandomAccessIterator<_Iter2>& __y)
+{
+    return !(__x < __y);
+}
+
+template <class _Iter1, class _Iter2>
+bool operator<=(const RandomAccessIterator<_Iter1>& __x, const RandomAccessIterator<_Iter2>& __y)
+{
+    return !(__y < __x);
+}
+

@@ -21,7 +21,7 @@ namespace ft
         value_t val;
 
         tree(): parent(NULL), r(NULL), l(NULL), val(value_t()) {}
-        tree(const value_t &p): parent(NULL), val(p), r(NULL), l(NULL) {}
+        tree(const value_t &p): parent(NULL), r(NULL), l(NULL), val(p) {}
         tree(const tree &p): parent(p.parent), r(p.r), l(p.l), h(p.h), val(p.val) {}
     };
 
@@ -61,29 +61,6 @@ namespace ft
             ret->l = copy_tree(c->l, ret);
             ret->r = copy_tree(c->r, ret);
             return (ret);
-        }
-
-        S &get_element_by_index(F &k)
-        {
-            tree_s *tmp = this->root;
-
-            while (tmp)
-            {
-                if (k > tmp->val.first)
-                    tmp = tmp->right;
-                else if (k < tmp->val.first)
-                    tmp = tmp->left;
-                else
-                    break;
-            }
-            if (k == tmp->val.first)
-                return (tmp->val.second);
-            else
-            {
-                value_t p = ft::make_pair(k, value_t());
-                insert(&(this->root), p, NULL);
-                return (p.second);
-            }
         }
 
         int calheight(tree_s *p)
@@ -329,6 +306,7 @@ public:
             alloc.deallocate(t, 1);
             t = NULL;
         }
+		
         ~Avl()
         {
             alloc.deallocate(el, 1);

@@ -37,29 +37,29 @@ namespace ft
 
 
 
-class value_compare
-{
-  friend class map;
-  protected:
-    Compare comp;
-    value_compare (Compare c) : comp(c) {}
-  public:
-    typedef bool result_type;
-    typedef value_type first_argument_type;
-    typedef value_type second_argument_type;
-    bool operator() (const value_type& x, const value_type& y) const
-    {
-      return comp(x.first, y.first);
-    }
-};
+	class value_compare
+	{
+	friend class map;
+	protected:
+		Compare comp;
+		value_compare (Compare c) : comp(c) {}
+	public:
+		typedef bool result_type;
+		typedef value_type first_argument_type;
+		typedef value_type second_argument_type;
+		bool operator() (const value_type& x, const value_type& y) const
+		{
+		return comp(x.first, y.first);
+		}
+	};
 
-  private:
+private:
     base_type       *base_tree;
     alloc_base       baseallocator;
     key_compare      comp;
     allocator_type   alloc;
     size_type        _size;
-  public:
+public:
     explicit map (const key_compare& com = key_compare(),
               const allocator_type& alctr = allocator_type())
     {
